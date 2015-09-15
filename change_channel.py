@@ -19,7 +19,7 @@ def deleteMETAFiles(destApk):
             print(cmd)
 
 '''
-python parseAxml.py yourApkFile yourStoreFile yourStorePasswd yourAlian youAlianPasswd oldChannelStr
+python parseAxml.py yourApkFile yourStoreFile yourStorePasswd yourAlias youAlianPasswd oldChannelStr
 '''
 if __name__ == '__main__':
     apkFile = sys.argv[1]

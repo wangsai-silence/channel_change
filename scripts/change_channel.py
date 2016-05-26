@@ -1,5 +1,5 @@
 #encoding:utf-8
-import zipfile, shutil, sys, array, os, signapk, axmlparser, datetime
+import zipfile, shutil, sys, array, os, signapk, axmlparser, time
 
 xmlFile = 'AndroidManifest.xml'
 #格式化字符串
@@ -14,13 +14,14 @@ def deleteMETAFiles(destApk):
 
     for meta in namelist:
         if 'META-INF/' in meta:
-            cmd = 'aapt r ' + destApk + ' ' + meta
+            cmd = os.getcwd() + '/tools/aapt r ' + destApk + ' ' + meta
             os.system(cmd)
             print(cmd)
 
-'''
-python parseAxml.py yourApkFile yourStoreFile yourStorePasswd yourAlias youAlianPasswd oldChannelStr
-'''
+#获取当前时间
+def getCurTime():
+    return time.strftime('%m%d%H%M%S', time.localtime(time.time()))
+
 if __name__ == '__main__':
     apkFile = sys.argv[1]
     keyStoreFile = sys.argv[2]
@@ -28,21 +29,25 @@ if __name__ == '__main__':
     alianName = sys.argv[4]
     keyPass = sys.argv[5]
     old_channel = sys.argv[6]
+    newChannelFile = sys.argv[7]
+    prefix = sys.argv[8]
+
+    #创建文件夹
+    outputDirName = prefix + 'output_' + getCurTime()
+    if not os.path.exists(outputDirName):
+        os.makedirs(outputDirName)
 
     #读取渠道列表
     channel_list = []
-    for channel in open('channels.txt'):
-        t1 = datetime.datetime.now()
-        
+    for channel in open(newChannelFile):
+
         channel_list.append(format(channel))
-        destApk = 'output/' + formatStr(channel) + '.apk'
+        destApk = outputDirName + '/' + prefix + formatStr(channel) + '.apk'
         
         #复制apk，重命名
         shutil.copyfile(apkFile, destApk)
-        
-        print('copy apk:' + bytes(datetime.datetime.now() - t1))
-        
-        #解压apk,得到xml
+                        
+        #解压apk,得到xml        
         zipped = zipfile.ZipFile(destApk, 'r')
         zipped.extract(xmlFile)
         zipped.close()
@@ -60,22 +65,19 @@ if __name__ == '__main__':
         tmp.write(axml_array)
         tmp.close()
         
-        print('alert xml:' + bytes(datetime.datetime.now() - t1))
 
+        print(os.path.abspath('.'))
         #压缩回apk 先删除原来的，然后将现在的添加进去
-        cmd = 'aapt r ' + destApk + ' ' + xmlFile
+        cmd = os.getcwd() + '/tools/aapt r ' + destApk + ' ' + xmlFile
         os.system(cmd)
-        print(cmd)
-        os.system('aapt a ' + destApk + ' ' + xmlFile)
+        os.system(os.getcwd() + '/tools/aapt a ' + destApk + ' ' + xmlFile)
         
         #删除META中的各种加密验证文件
         deleteMETAFiles(destApk)
-        print('delete meta-inf:' + bytes(datetime.datetime.now() - t1))
-        
+              
 
         #重新签名文件
         signapk.signAPK(destApk, keyStoreFile, storePass, alianName, keyPass)
-        print('sign apk:' + bytes(datetime.datetime.now() - t1))
-        
+
         
         

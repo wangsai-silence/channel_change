@@ -17,13 +17,14 @@
  - newChannelFile 新渠道列表对应的文件（从文件中读取新渠道列表）
  - prefix 生成新的apk过程中，添加的前缀，主要是用于区分不同的apk包
 
-#环境说明
-　　Windows Python2.7
-　　    `Linux环境下需要替换tools内相关的tool，从android tools文件夹下查找即可；`
+# 环境说明
+　　
+  Windows Python2.7
+　Linux环境下需要替换tools内相关的tool，从android tools文件夹下查找即可；
 　　    
 -----
 
-#使用方法
+# 使用方法
 
  1. 将新的渠道列表添加到channels文件夹内
  2. 添加源apk文件
